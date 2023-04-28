@@ -11,6 +11,7 @@ TOKEN = os.getenv('TELEGRAM_TOKEN')
 oleg_id = os.getenv('OLEG_ID')
 kamran_id = os.getenv('KAMRAN_ID')
 olegs_workers = [os.getenv('ANTON_ID')]
+users_stats = {}
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
