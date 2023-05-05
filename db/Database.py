@@ -30,6 +30,9 @@ class ExcelImportStats:
 class Database:
     def __init__(self):
         self.table_name = 'kamran'
+
+
+    def get_code(self):
         self.conn = psycopg2.connect(
             host=secret.DATABASE_HOST,
             database=secret.DATABASE_NAME,
@@ -37,8 +40,6 @@ class Database:
             password=secret.DATABASE_PASSWORD,
         )
         self.cur = self.conn.cursor()
-
-    def get_code(self):
         self.cur.execute(f"SELECT * FROM {self.table_name} WHERE stage=%s", ("Target parsed",))
         record = self.cur.fetchone()
         if not record:
@@ -46,22 +47,46 @@ class Database:
         return DBObj(
             record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8],
             record[9], record[10], record[11])
+        self.conn.close()
 
     def set_success(self, data):
+        self.conn = psycopg2.connect(
+            host=secret.DATABASE_HOST,
+            database=secret.DATABASE_NAME,
+            user=secret.DATABASE_LOGIN,
+            password=secret.DATABASE_PASSWORD,
+        )
+        self.cur = self.conn.cursor()
         t_article = data.data.split('_')[1]
         s_article = data.data.split('_')[2]
         self.cur.execute(f"UPDATE {self.table_name} SET stage=%s WHERE s_article=%s AND t_article=%s",
                          ('Suggested', s_article, t_article,))
         self.conn.commit()
+        self.conn.close()
 
     def set_decline(self, data):
+        self.conn = psycopg2.connect(
+            host=secret.DATABASE_HOST,
+            database=secret.DATABASE_NAME,
+            user=secret.DATABASE_LOGIN,
+            password=secret.DATABASE_PASSWORD,
+        )
+        self.cur = self.conn.cursor()
         t_article = data.data.split('_')[1]
         s_article = data.data.split('_')[2]
         self.cur.execute(f"DELETE FROM {self.table_name} WHERE s_article=%s AND t_article=%s",
                          (s_article, t_article,))
         self.conn.commit()
+        self.conn.close()
 
     def load_excel_to_db(self):
+        self.conn = psycopg2.connect(
+            host=secret.DATABASE_HOST,
+            database=secret.DATABASE_NAME,
+            user=secret.DATABASE_LOGIN,
+            password=secret.DATABASE_PASSWORD,
+        )
+        self.cur = self.conn.cursor()
         filename = 'upload.xlsx'
         df = pd.read_excel(filename, usecols=[0])
         file_data = df.iloc[:, 0].values.tolist()
@@ -82,6 +107,7 @@ class Database:
                 print(e)
         positions_count = len(positions)
         from_file_count = len(file_data)
+        self.conn.close()
         return ExcelImportStats(
             inserted_count=inserted_count,
             positions_count=positions_count,
