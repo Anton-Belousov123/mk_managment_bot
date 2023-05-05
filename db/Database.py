@@ -73,10 +73,10 @@ class Database:
         for position in positions:
             try:
                 inserted_count += 1
-                self.cur.execute(f"INSERT INTO {self.table_name} (s_article) "
-                                 f"SELECT %s WHERE NOT EXISTS "
+                self.cur.execute(f"INSERT INTO {self.table_name} (s_article, stage) "
+                                 f"SELECT %s, %s WHERE NOT EXISTS "
                                  f"(SELECT s_article FROM {self.table_name} WHERE s_article = %s)",
-                                 (str(position),str(position)))
+                                 (str(position), "Created", str(position)))
                 self.conn.commit()
             except Exception as e:
                 print(e)
