@@ -76,10 +76,10 @@ class Database:
                 self.cur.execute(f"INSERT INTO {self.table_name} (s_article) "
                                  f"SELECT %s WHERE NOT EXISTS "
                                  f"(SELECT s_article FROM {self.table_name} WHERE s_article = %s)",
-                                 (position,position))
+                                 (str(position),str(position)))
                 self.conn.commit()
-            except:
-                pass
+            except Exception as e:
+                print(e)
         positions_count = len(positions)
         from_file_count = len(file_data)
         return ExcelImportStats(
