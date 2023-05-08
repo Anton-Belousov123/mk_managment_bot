@@ -14,16 +14,16 @@ def download_image(link: str, index, title):
     with open(filename, "wb") as handler:
         handler.write(img_data)
     handler.close()
-    image = Image.open(filename)
-    sunset_resized = image
-    draw = ImageDraw.Draw(sunset_resized)
-    text_color = (255, 0, 0)
+    #image = Image.open(filename)
+    #sunset_resized = image
+    #draw = ImageDraw.Draw(sunset_resized)
+    #text_color = (255, 0, 0)
 
-    text_width, text_height = draw.textsize(title)
-    x = 10
-    y = 10
-    draw.text((x, y), title, fill=text_color)
-    sunset_resized.save(filename)
+    #text_width, text_height = draw.textsize(title)
+    #x = 10
+    #y = 10
+    #draw.text((x, y), title, fill=text_color)
+    #sunset_resized.save(filename)
     return filename
 
 
