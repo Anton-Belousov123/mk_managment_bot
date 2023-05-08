@@ -16,6 +16,5 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 database = Database()
-print(database)
 
 from handlers import dp
