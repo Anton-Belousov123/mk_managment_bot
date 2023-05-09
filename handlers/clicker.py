@@ -8,22 +8,16 @@ from PIL import Image, ImageFont, ImageDraw
 from bot import dp, bot, olegs_workers, database
 import requests
 
+
+olegs_persons = []
+
+
 def download_image(link: str, index, title):
     filename = f"{index}.jpg"
     img_data = requests.get(link).content
     with open(filename, "wb") as handler:
         handler.write(img_data)
     handler.close()
-    #image = Image.open(filename)
-    #sunset_resized = image
-    #draw = ImageDraw.Draw(sunset_resized)
-    #text_color = (255, 0, 0)
-
-    #text_width, text_height = draw.textsize(title)
-    #x = 10
-    #y = 10
-    #draw.text((x, y), title, fill=text_color)
-    #sunset_resized.save(filename)
     return filename
 
 
@@ -33,9 +27,14 @@ async def delete_prev_message(message: types.Message):
             await bot.delete_message(message.chat.id, message.message_id - i)
         except:
             pass
+
+
 async def send_item(message: types.Message):
     await delete_prev_message(message)
-    card = database.get_code()
+    table_name = 'kamran'
+    if message.chat.id in olegs_persons:
+        table_name = 'oleg'
+    card = database.get_code(table_name)
     print(card)
     if not card:
         await bot.send_message(chat_id=message.chat.id, text='На данный момент доступных к обработке карточек нет!',
@@ -64,13 +63,19 @@ async def send_item(message: types.Message):
 @dp.callback_query_handler(lambda data: 'approve' in data.data)
 async def approve_button_handler(data):
     global users_stats
-    database.set_success(data)
+    table_name = 'kamran'
+    if data.message.chat.id in olegs_persons:
+        table_name = 'oleg'
+    database.set_success(data, table_name)
     await data.answer("Согласовано!")
     await send_item(data.message)
 
 @dp.callback_query_handler(lambda data: 'reject' in data.data)
 async def reject_button_handler(data):
-    database.set_decline(data)
+    table_name = 'kamran'
+    if data.message.chat.id in olegs_persons:
+        table_name = 'oleg'
+    database.set_decline(data, table_name)
     await data.answer("Удалено!")
     await send_item(data.message)
 

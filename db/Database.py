@@ -20,6 +20,7 @@ class DBObj:
     stage: str
     t_article: int
 
+
 @dataclasses.dataclass
 class ExcelImportStats:
     inserted_count: int
@@ -29,10 +30,9 @@ class ExcelImportStats:
 
 class Database:
     def __init__(self):
-        self.table_name = 'kamran'
+        pass
 
-
-    def get_code(self):
+    def get_code(self, table_name):
         self.conn = psycopg2.connect(
             host=secret.DATABASE_HOST,
             database=secret.DATABASE_NAME,
@@ -40,7 +40,7 @@ class Database:
             password=secret.DATABASE_PASSWORD,
         )
         self.cur = self.conn.cursor()
-        self.cur.execute(f"SELECT * FROM {self.table_name} WHERE stage=%s", ("Target parsed",))
+        self.cur.execute(f"SELECT * FROM {table_name} WHERE stage=%s", ("Target parsed",))
         record = self.cur.fetchone()
         if not record:
             return None
@@ -49,7 +49,7 @@ class Database:
             record[9], record[10], record[11])
         self.conn.close()
 
-    def set_success(self, data):
+    def set_success(self, data, table_name):
         self.conn = psycopg2.connect(
             host=secret.DATABASE_HOST,
             database=secret.DATABASE_NAME,
@@ -59,12 +59,12 @@ class Database:
         self.cur = self.conn.cursor()
         t_article = data.data.split('_')[1]
         s_article = data.data.split('_')[2]
-        self.cur.execute(f"UPDATE {self.table_name} SET stage=%s WHERE s_article=%s AND t_article=%s",
+        self.cur.execute(f"UPDATE {table_name} SET stage=%s WHERE s_article=%s AND t_article=%s",
                          ('Suggested', s_article, t_article,))
         self.conn.commit()
         self.conn.close()
 
-    def set_decline(self, data):
+    def set_decline(self, data, table_name):
         self.conn = psycopg2.connect(
             host=secret.DATABASE_HOST,
             database=secret.DATABASE_NAME,
@@ -74,7 +74,7 @@ class Database:
         self.cur = self.conn.cursor()
         t_article = data.data.split('_')[1]
         s_article = data.data.split('_')[2]
-        self.cur.execute(f"DELETE FROM {self.table_name} WHERE s_article=%s AND t_article=%s",
+        self.cur.execute(f"DELETE FROM {table_name} WHERE s_article=%s AND t_article=%s",
                          (s_article, t_article,))
         self.conn.commit()
         self.conn.close()
@@ -98,9 +98,9 @@ class Database:
         for position in positions:
             try:
                 inserted_count += 1
-                self.cur.execute(f"INSERT INTO {self.table_name} (s_article, stage) "
+                self.cur.execute(f"INSERT INTO {'kamran'} (s_article, stage) "
                                  f"SELECT %s, %s WHERE NOT EXISTS "
-                                 f"(SELECT s_article FROM {self.table_name} WHERE s_article = %s)",
+                                 f"(SELECT s_article FROM {'kamran'} WHERE s_article = %s)",
                                  (str(position), "Created", str(position)))
                 self.conn.commit()
             except Exception as e:
