@@ -49,7 +49,10 @@ async def send_item(message: types.Message):
             arr.append(InputMediaPhoto(open(download_image(t_photos[i], i, 'MarketPlace'), "rb"), caption=f"Marketplace{i}"))
             if len(arr) == 4:
                 break
-        await bot.send_media_group(message.chat.id, media=arr)
+        try:
+            await bot.send_media_group(message.chat.id, media=arr)
+        except:
+            pass
         text = f"Источник:\n№ {card.s_article}\nИмя: {card.s_name}\nЦена: {card.s_price}\n<a href='{card.s_url}'>Посмотреть товар</a>"
         text += f"\n\nМаркетплейс:\n№ {card.t_article}\nИмя: {card.t_name}\nЦена: {card.t_price}\n<a href='{card.t_url}'>Посмотреть товар</a>"
         reply_markup = InlineKeyboardMarkup()
