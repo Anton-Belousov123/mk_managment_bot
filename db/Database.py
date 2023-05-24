@@ -64,6 +64,7 @@ class Database:
         self.conn.commit()
         self.cur.execute(f"DELETE FROM {table_name} WHERE s_article=%s AND stage!=%s;",
                          (s_article, 'Suggested',))
+        self.conn.commit()
         self.conn.close()
 
     def set_decline(self, data, table_name):
