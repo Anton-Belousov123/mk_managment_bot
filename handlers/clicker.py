@@ -9,7 +9,7 @@ from bot import dp, bot, olegs_workers, database
 import requests
 
 
-olegs_persons = [1398715343, 791143287]
+olegs_persons = [1398715343, 791143287, 1142295810]
 
 
 def download_image(link: str, index, title):
