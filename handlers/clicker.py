@@ -44,7 +44,11 @@ async def send_item(message: types.Message):
         print(card.t_photo)
         t_photos = json.loads(card.t_photo.replace("'", '"'))
         print(t_photos)
-        arr = [InputMediaPhoto(open(download_image(card.s_photo, -1, 'Source'), "rb"), caption="Source")]
+        arr = []
+        try:
+            arr.append(InputMediaPhoto(open(download_image(card.s_photo, -1, 'Source'), "rb"), caption="Source"))
+        except:
+            await message.answer(text="Oreht: " + card.s_photo)
         for i in range(len(t_photos)):
             arr.append(InputMediaPhoto(open(download_image(t_photos[i], i, 'MarketPlace'), "rb"), caption=f"Marketplace{i}"))
             if len(arr) == 4:
