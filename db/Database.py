@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 
 from sc import secret
@@ -41,13 +43,14 @@ class Database:
         )
         self.cur = self.conn.cursor()
         self.cur.execute(f"SELECT * FROM {table_name} WHERE stage=%s", ("Target parsed",))
-        record = self.cur.fetchone()
-        if not record:
+        records = self.cur.fetchall()
+        self.conn.close()
+        if not records:
             return None
+        record = random.choice(records)
         return DBObj(
             record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7], record[8],
             record[9], record[10], record[11])
-        self.conn.close()
 
     def set_success(self, data, table_name):
         self.conn = psycopg2.connect(
