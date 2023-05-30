@@ -70,6 +70,25 @@ class Database:
         self.conn.commit()
         self.conn.close()
 
+
+    def set_plus_minus(self, data, table_name):
+        self.conn = psycopg2.connect(
+            host=secret.DATABASE_HOST,
+            database=secret.DATABASE_NAME,
+            user=secret.DATABASE_LOGIN,
+            password=secret.DATABASE_PASSWORD,
+        )
+        self.cur = self.conn.cursor()
+        t_article = data.data.split('_')[1]
+        s_article = data.data.split('_')[2]
+        self.cur.execute(f"UPDATE {table_name} SET stage=%s WHERE s_article=%s AND t_article=%s",
+                         ('Plus-Minus', s_article, t_article,))
+        self.conn.commit()
+        self.cur.execute(f"DELETE FROM {table_name} WHERE s_article=%s AND stage!=%s;",
+                         (s_article, 'Plus-Minus',))
+        self.conn.commit()
+        self.conn.close()
+
     def set_decline(self, data, table_name):
         self.conn = psycopg2.connect(
             host=secret.DATABASE_HOST,

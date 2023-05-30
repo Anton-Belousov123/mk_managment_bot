@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -10,7 +11,15 @@ import requests
 
 
 olegs_persons = [1398715343, 791143287, 1142295810, 766551887, 919524762]
+stats = {}
+date = datetime.datetime.now().day
 
+@dp.message_handler(commands=['stats'])
+async def statistic(message: types.Message):
+    answer = ''
+    for k, v in stats.items():
+        answer += f'{k} - {v[0]} / {v[1]} / {v[2]}\n'
+    await message.answer(answer)
 
 def download_image(link: str, index, title):
     filename = f"{index}.jpg"
@@ -62,6 +71,7 @@ async def send_item(message: types.Message):
         reply_markup = InlineKeyboardMarkup()
         reply_markup.add(
             InlineKeyboardButton(text='✅', callback_data=f'approve_{card.t_article}_{card.s_article}'),
+            InlineKeyboardButton(text='±', callback_data=f'plus-minus_{card.t_article}_{card.s_article}'),
             InlineKeyboardButton(text='❌', callback_data=f'reject_{card.t_article}_{card.s_article}')
         )
         await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=reply_markup, parse_mode="HTML", disable_web_page_preview=True)
@@ -69,7 +79,17 @@ async def send_item(message: types.Message):
 
 @dp.callback_query_handler(lambda data: 'approve' in data.data)
 async def approve_button_handler(data):
-    global users_stats
+    global stats
+    global date
+    if str(date) != str(datetime.datetime.now().day):
+        date = datetime.datetime.now().day
+        stats = {}
+    name = str(data.message.from_user.first_name) + ' ' + str(data.message.from_user.last_name) + ' ' + str(
+        data.message.from_user.username)
+    try:
+        stats[name][0] += 1
+    except:
+        stats[name] = [1, 0, 0]
     table_name = 'kamran'
     if data.message.chat.id in olegs_persons:
         table_name = 'oleg'
@@ -77,8 +97,44 @@ async def approve_button_handler(data):
     await data.answer("Согласовано!")
     await send_item(data.message)
 
+
+
+
+@dp.callback_query_handler(lambda data: 'plus-minus' in data.data)
+async def plus_minus_handler(data):
+    global stats
+
+    global date
+    if str(date) != str(datetime.datetime.now().day):
+        date = datetime.datetime.now().day
+        stats = {}
+    name = str(data.message.from_user.first_name) + ' ' + str(data.message.from_user.last_name) + ' ' + str(
+        data.message.from_user.username)
+    try:
+        stats[name][1] += 1
+    except:
+        stats[name] = [0, 1, 0]
+    table_name = 'kamran'
+    if data.message.chat.id in olegs_persons:
+        table_name = 'oleg'
+    database.set_plus_minus(data, table_name)
+    await data.answer("Принято!")
+    await send_item(data.message)
+
+
 @dp.callback_query_handler(lambda data: 'reject' in data.data)
 async def reject_button_handler(data):
+    global stats
+
+    global date
+    if str(date) != str(datetime.datetime.now().day):
+        date = datetime.datetime.now().day
+        stats = {}
+    name = str(data.message.from_user.first_name) + ' ' + str(data.message.from_user.last_name) + ' ' + str(data.message.from_user.username)
+    try:
+        stats[name][2] += 1
+    except:
+        stats[name] = [0, 0, 1]
     table_name = 'kamran'
     if data.message.chat.id in olegs_persons:
         table_name = 'oleg'
