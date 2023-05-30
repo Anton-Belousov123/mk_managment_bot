@@ -84,8 +84,8 @@ async def approve_button_handler(data):
     if str(date) != str(datetime.datetime.now().day):
         date = datetime.datetime.now().day
         stats = {}
-    name = str(data.message.from_user.first_name) + ' ' + str(data.message.from_user.last_name) + ' ' + str(
-        data.message.from_user.username)
+    name = str(data.message.chat.first_name) + ' ' + str(data.message.chat.last_name) + ' ' + str(
+        data.message.chat.username)
     try:
         stats[name][0] += 1
     except:
@@ -108,8 +108,8 @@ async def plus_minus_handler(data):
     if str(date) != str(datetime.datetime.now().day):
         date = datetime.datetime.now().day
         stats = {}
-    name = str(data.message.from_user.first_name) + ' ' + str(data.message.from_user.last_name) + ' ' + str(
-        data.message.from_user.username)
+    name = str(data.message.chat.first_name) + ' ' + str(data.message.chat.last_name) + ' ' + str(
+        data.message.chat.username)
     try:
         stats[name][1] += 1
     except:
@@ -130,7 +130,7 @@ async def reject_button_handler(data):
     if str(date) != str(datetime.datetime.now().day):
         date = datetime.datetime.now().day
         stats = {}
-    name = str(data.message.from_user.first_name) + ' ' + str(data.message.from_user.last_name) + ' ' + str(data.message.from_user.username)
+    name = str(data.message.chat.first_name) + ' ' + str(data.message.chat.last_name) + ' ' + str(data.message.chat.username)
     try:
         stats[name][2] += 1
     except:
